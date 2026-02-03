@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日圣经 - 今日经文</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 32px;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        
+        .date {
+            color: #7f8c8d;
+            font-size: 18px;
+            font-weight: 300;
+        }
+        
+        .verse-container {
+            margin: 50px 0;
+            font-size: 24px;
+            line-height: 2.0;
+            min-height: 300px;
+            color: #2c3e50;
+            font-weight: 300;
+        }
+        
+        .verse-line {
+            display: block;
+            margin: 18px 0;
+            text-align: center;
+            padding: 12px 0;
+            position: relative;
+        }
+        
+        .verse-line:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20%;
+            right: 20%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(74, 100, 145, 0.2), transparent);
+        }
+        
+        .verse-line:last-child:after {
+            display: none;
+        }
+        
+        .reference {
+            text-align: center;
+            color: #4a6491;
+            font-weight: bold;
+            font-size: 22px;
+            margin-top: 60px;
+            padding-top: 25px;
+            position: relative;
+            font-style: italic;
+            letter-spacing: 1px;
+        }
+        
+        .reference:before {
+            content: '——';
+            margin-right: 10px;
+            color: #95a5a6;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 50px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #4a6491, #2c3e50);
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+            font-weight: 300;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover:before {
+            left: 100%;
+        }
+        
+        button i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            color: #95a5a6;
+            font-size: 14px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            font-weight: 300;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .verse-container {
+                font-size: 22px;
+                margin: 30px 0;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            .verse-line {
+                margin: 15px 0;
+                padding: 10px 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .verse-container {
+                font-size: 20px;
+            }
+            
+            .reference {
+                font-size: 20px;
+            }
+            
+            button {
+                padding: 15px;
+                font-size: 16px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-bible"></i> 每日圣经</h1>
+            <div class="date" id="todayDate"></div>
+        </div>
+        
+        <div class="verse-container" id="verseDisplay">
+            <!-- 经文会在这里显示 -->
+        </div>
+        
+        <div class="reference" id="reference"></div>
+        
+        <div class="buttons">
+            <button onclick="getRandomVerse()">
+                <i class="fas fa-sync-alt"></i> 换一段经文
+            </button>
+            <button onclick="copyVerse()">
+                <i class="far fa-copy"></i> 复制经文
+            </button>
+        </div>
+        
+        <div class="footer">
+            神的话语是我们脚前的灯，路上的光 —— 诗篇 119:105
+        </div>
+    </div>
+
+    <script>
+        // 圣经经文数据
+        const bibleVerses = [
+            {
+                reference: "诗篇 23:1-3",
+                text: "耶和华是我的牧者，我必不至缺乏。他使我躺卧在青草地上，领我在可安歇的水边。他使我的灵魂苏醒，为自己的名引导我走义路。"
+            },
+            {
+                reference: "哥林多前书 13:4-7",
+                text: "爱是恒久忍耐，又有恩慈；爱是不嫉妒；爱是不自夸，不张狂，不做害羞的事，不求自己的益处，不轻易发怒，不计算人的恶，不喜欢不义，只喜欢真理；凡事包容，凡事相信，凡事盼望，凡事忍耐。"
+            },
+            {
+                reference: "马太福音 5:3-6",
+                text: "虚心的人有福了！因为天国是他们的。哀恸的人有福了！因为他们必得安慰。温柔的人有福了！因为他们必承受地土。饥渴慕义的人有福了！因为他们必得饱足。"
+            },
+            {
+                reference: "腓立比书 4:6-7",
+                text: "应当一无挂虑，只要凡事借着祷告、祈求，和感谢，将你们所要的告诉神。神所赐、出人意外的平安必在基督耶稣里保守你们的心怀意念。"
+            },
+            {
+                reference: "约翰福音 3:16",
+                text: "神爱世人，甚至将他的独生子赐给他们，叫一切信他的，不至灭亡，反得永生。"
+            },
+            {
+                reference: "箴言 3:5-6",
+                text: "你要专心仰赖耶和华，不可倚靠自己的聪明，在你一切所行的事上都要认定他，他必指引你的路。"
+            },
+            {
+                reference: "以赛亚书 40:31",
+                text: "但那等候耶和华的必从新得力。他们必如鹰展翅上腾；他们奔跑却不困倦，行走却不疲乏。"
+            },
+            {
+                reference: "马太福音 11:28",
+                text: "凡劳苦担重担的人可以到我这里来，我就使你们得安息。"
+            },
+            {
+                reference: "罗马书 8:28",
+                text: "我们晓得万事都互相效力，叫爱神的人得益处，就是按他旨意被召的人。"
+            },
+            {
+                reference: "诗篇 46:1",
+                text: "神是我们的避难所，是我们的力量，是我们在患难中随时的帮助。"
+            }
+        ];
+
+        // 计算中文字符数
+        function getChineseCharCount(text) {
+            const chineseChars = text.match(/[\u4e00-\u9fa5]/g);
+            return chineseChars ? chineseChars.length : 0;
+        }
+
+        // 智能分行算法 - 简洁版
+        function formatVerseBeautifully(text) {
+            // 1. 按强制分行标点分割（分号、句号、问号、感叹号）
+            const sentences = text.split(/([；。！？])/);
+            
+            // 2. 清理和重组
+            const cleanSentences = [];
+            let current = '';
+            
+            for (let i = 0; i < sentences.length; i++) {
+                if (sentences[i].trim() === '') continue;
+                
+                if (/[；。！？]/.test(sentences[i])) {
+                    current += sentences[i];
+                    cleanSentences.push(current);
+                    current = '';
+                } else {
+                    current = sentences[i];
+                }
+            }
+            
+            // 3. 处理逗号分行（智能合并短行）
+            const finalLines = [];
+            
+            for (let sentence of cleanSentences) {
+                const charCount = getChineseCharCount(sentence);
+                
+                // 如果句子较短（≤8字），直接使用
+                if (charCount <= 8) {
+                    finalLines.push(sentence);
+                    continue;
+                }
+                
+                // 如果句子较长，按逗号分割并智能合并
+                const commaParts = sentence.split('，');
+                let lineBuffer = '';
+                
+                for (let i = 0; i < commaParts.length; i++) {
+                    let part = commaParts[i];
+                    // 如果不是最后一部分，补回逗号
+                    if (i < commaParts.length - 1) {
+                        part += '，';
+                    }
+                    
+                    // 如果是空部分，跳过
+                    if (part.trim() === '') continue;
+                    
+                    // 检查是否可以合并到当前行
+                    const currentLength = getChineseCharCount(lineBuffer);
+                    const partLength = getChineseCharCount(part);
+                    
+                    if (lineBuffer === '') {
+                        // 新行
+                        lineBuffer = part;
+                    } else if (currentLength + partLength <= 12) {
+                        // 可以合并且不超过12字
+                        lineBuffer += part;
+                    } else {
+                        // 不能合并，保存当前行，开始新行
+                        finalLines.push(lineBuffer);
+                        lineBuffer = part;
+                    }
+                }
+                
+                // 保存最后一行
+                if (lineBuffer !== '') {
+                    finalLines.push(lineBuffer);
+                }
+            }
+            
+            // 4. 最后检查：确保没有过长的行
+            const result = [];
+            for (let line of finalLines) {
+                const charCount = getChineseCharCount(line);
+                
+                if (charCount > 12) {
+                    // 过长行需要分割
+                    const words = line.split('');
+                    let tempLine = '';
+                    let tempCount = 0;
+                    
+                    for (let word of words) {
+                        tempLine += word;
+                        if (/[\u4e00-\u9fa5]/.test(word)) {
+                            tempCount++;
+                        }
+                        
+                        // 每10字左右分割一次，尽量在标点处断开
+                        if (tempCount >= 10 && 
+                            (word === '，' || word === '。' || word === '；')) {
+                            result.push(tempLine);
+                            tempLine = '';
+                            tempCount = 0;
+                        }
+                    }
+                    
+                    if (tempLine !== '') {
+                        result.push(tempLine);
+                    }
+                } else {
+                    result.push(line);
+                }
+            }
+            
+            return result;
+        }
+
+        // 显示经文
+        function displayVerse(verse) {
+            const lines = formatVerseBeautifully(verse.text);
+            let html = '';
+            
+            lines.forEach(line => {
+                html += `<div class="verse-line">${line}</div>`;
+            });
+            
+            document.getElementById('verseDisplay').innerHTML = html;
+            document.getElementById('reference').textContent = verse.reference;
+        }
+
+        // 获取随机经文
+        function getRandomVerse() {
+            // 添加一点动画效果
+            const verseDisplay = document.getElementById('verseDisplay');
+            verseDisplay.style.opacity = '0.5';
+            verseDisplay.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                const index = Math.floor(Math.random() * bibleVerses.length);
+                displayVerse(bibleVerses[index]);
+                
+                verseDisplay.style.opacity = '1';
+                verseDisplay.style.transform = 'translateY(0)';
+            }, 300);
+        }
+
+        // 复制经文
+        function copyVerse() {
+            const verseLines = document.querySelectorAll('.verse-line');
+            let text = '';
+            verseLines.forEach(line => {
+                text += line.textContent.trim() + '\n';
+            });
+            
+            text += '\n' + document.getElementById('reference').textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                // 显示复制成功提示
+                const button = event.currentTarget;
+                const originalHTML = button.innerHTML;
+                
+                button.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                button.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.style.background = '';
+                }, 2000);
+            });
+        }
+
+        // 显示日期
+        function showDate() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const weekday = weekdays[now.getDay()];
+            
+            document.getElementById('todayDate').textContent = `${year}年${month}月${day}日 ${weekday}`;
+        }
+
+        // 页面加载
+        window.onload = function() {
+            showDate();
+            getRandomVerse();
+            
+            // 添加键盘快捷键
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'r' || e.key === 'R') {
+                    getRandomVerse();
+                }
+                if (e.key === 'c' && (e.ctrlKey || e.metaKey)) {
+                    copyVerse();
+                }
+            });
+        };
+    </script>
+</body>
+</html>
